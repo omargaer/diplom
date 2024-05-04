@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kanban Board</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+        }
+        .column {
+            flex: 1;
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        h2 {
+            text-align: center;
+        }
+        .task {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="column">
+            <h2>To Do</h2>
+            <div class="task">Task 1</div>
+            <div class="task">Task 2</div>
+        </div>
+        <div class="column">
+            <h2>In Progress</h2>
+            <div class="task">Task 3</div>
+            <div class="task">Task 4</div>
+        </div>
+        <div class="column">
+            <h2>Done</h2>
+            <div class="task">Task 5</div>
+            <div class="task">Task 6</div>
+        </div>
+    </div>
+</body>
+</html>
