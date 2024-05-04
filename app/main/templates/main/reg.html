@@ -1,7 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="ru">
-
 <head>
     <meta charset="UTF-8">
     <link rel="icon" href="{% static 'deps/icons/neongaer.png' %}" type="image/png">
@@ -20,7 +19,7 @@
             background-size: cover; 
             {% comment %} height: 100%; {% endcomment %}
         }
-        .login-container {
+        .register-container {
             border: 1px solid #ccc;
             padding: 20px;
             border-radius: 5px;
@@ -40,43 +39,22 @@
         }
         button {
             padding: 10px 20px;
+            background-color: #007bff;
             color: white;
             border: none;
             border-radius: 5px;
-            cursor: pointer;
-            background-color: #007bff; 
-        }
-        .button-container {
-            display: flex;
-            width: 100%;
-        }
-        .login-button {
-            flex: 2; /* Button 1 takes 2/3 of the width */
-            padding: 10px 20px;
-            text-align: center;
-            cursor: pointer;
-            margin-right: 10px;
-        }
-        .register-button {
-            flex: 1; /* Button 2 takes 1/3 of the width */
-            padding: 10px 20px;
-            text-align: center;
             cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <h2 style="color: white;">Добро в Мавебап</h2>
-        <input type="text" placeholder="Логин">
+    <div class="register-container">
+        <h2 style="color: white;">Регистрация в Мавебап</h2>
+        <input type="text" placeholder="Имя">
+        <input type="text" placeholder="Фамилия">
+        <input type="email" placeholder="Email">
         <input type="password" placeholder="Пароль">
-        <div class="button-container">
-            <button class="login-button">Войти</button>
-            <button href=" {%url "main:registration"%}" class="register-button">
-                <a href="{% url 'main:registration' %}" style="text-decoration: none; color: inherit;">Зарегистрироваться</a>
-    </button>
-            
-        </div>
+        <button>Зарегистрироваться</button>
     </div>
 </body>
 </html>
