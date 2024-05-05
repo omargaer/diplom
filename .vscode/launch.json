@@ -5,11 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Отладчик Python: Текущий файл",
-            "type": "debugpy",
+            "name": "Python: Django",
+            "type": "python",
             "request": "launch",
-            "program": "${file}",
-            "console": "integratedTerminal"
+            "program": "${workspaceFolder}\\app\\manage.py",
+            "args":[
+                "runserver"
+            ],
+            "django":true,
+            "justMyCode": true
         }
     ]
 }
