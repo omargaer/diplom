@@ -14,12 +14,12 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-#маршрутизация проекта
+#глобальная маршрутизация проекта
 from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('main.urls', namespace = 'main')),
-    path('task_management/', include('task_management.urls' , namespace = "task_management"))
+    #подключение файла urls из основого приложения
+    path('', include('task_management.urls', namespace = 'task_management')) 
 ]
