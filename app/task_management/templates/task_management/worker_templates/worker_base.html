@@ -15,28 +15,27 @@
 
 	<body>
 		<nav class="navbar navbar-expand-lg navbar-light bg-light">
-				<a class="navbar-brand" href="#">Мавебап</a>
+				<a class="navbar-brand" href="{% url "task_management:worker_tasks" %}">Мавебап</a>
 				<button class="navbar-toggler" type="button" data-toggle="collapse"
 					data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
 					aria-expanded="false" aria-label="Toggle navigation">
 					<span class="navbar-toggler-icon"></span>
 				</button>
-
 			<div class="collapse navbar-collapse" id="navbarSupportedContent">
 				<ul class="navbar-nav mr-auto">
 					<li class="nav-item active">
-						<a class="nav-link" href="#">пуп
+						<a class="nav-link" href="{% url "task_management:worker_statistics" %}">Статистика
 							<span class="sr-only">(current)</span>
 						</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link" href="#">луп</a>
+						<a class="nav-link" href="{% url "task_management:worker_gantt" %}">Диаграмма Ганта</a>
 					</li>
 					<li class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown"
 							role="button" data-toggle="dropdown" aria-haspopup="true"
 							aria-expanded="false">
-							Dropdown
+							{{currentuser}}
 						</a>
 						<div class="dropdown-menu" aria-labelledby="navbarDropdown">
 							<a class="dropdown-item" href="#">Action</a>
@@ -54,8 +53,14 @@
 		{% endblock content %}
 
 		<!-- Script -->
+		<script>
+			var backlogTasks = JSON.parse('{{ tasks.backlog|safe }}');
+			var progressTasks = JSON.parse('{{ tasks.progress|safe }}');
+			var completeTasks = JSON.parse('{{ tasks.complete|safe }}');
+			var onHoldTasks = JSON.parse('{{ tasks.onHold|safe }}');
+		</script>
 		<script src= "{% static "deps/js/kanban_scripts.js" %}"></script>
-
+		
 		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
 			integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
 			crossorigin="anonymous"></script>

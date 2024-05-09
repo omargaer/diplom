@@ -1,3 +1,7 @@
-from django.contrib import admin
+from task_management.models import User
+from django.apps import AppConfig
 
-# Register your models here.
+class UsersConfig(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'users'
+    verbose_name = "Пользователи"

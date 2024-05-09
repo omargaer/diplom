@@ -217,5 +217,31 @@ function drop(e) {
 	rebuildArrays();
 }
 
+function updateDOM() {
+    // Используем встроенные переменные для инициализации колонок
+    backlogListArray = backlogTasks || [];
+    progressListArray = progressTasks || [];
+    completeListArray = completeTasks || [];
+    onHoldListArray = onHoldTasks || [];
+
+    // Обновляем DOM для каждой колонки
+    createListElements(backlogListEl, backlogListArray);
+    createListElements(progressListEl, progressListArray);
+    createListElements(completeListEl, completeListArray);
+    createListElements(onHoldListEl, onHoldListArray);
+}
+
+function createListElements(columnEl, tasksArray) {
+    columnEl.textContent = ""; // Очистка текущего содержимого колонки
+    tasksArray.forEach((task, index) => {
+        createItemEl(columnEl, index, task, index); // Пересоздание элементов
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    updateDOM(); // Инициализация DOM при загрузке страницы
+});
+
+
 // On Load
 updateDOM();
