@@ -2,11 +2,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):
-    name = models.CharField(max_length=100, null = True)
-    surname = models.CharField(max_length=100, null = True)
-    role = models.CharField(max_length=20)
-    profile_image_path = models.FilePathField(null= True)
-
+    role = models.CharField(max_length=20, default="worker")
+    
     class Meta:
         db_table = 'User'
 

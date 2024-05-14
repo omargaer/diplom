@@ -1,66 +1,37 @@
-const addBtns = document.querySelectorAll(".add-btn:not(.solid)");
-const saveItemBtns = document.querySelectorAll(".solid");
-const addItemContainers = document.querySelectorAll(".add-container");
-const addItems = document.querySelectorAll(".add-item");
+const backlogListEl = document.getElementById("to-do-list"); //массив "to-do" задач в разметке (ul)
+const progressListEl = document.getElementById("doing-list");//массив задач "в работе" в разметке (ul)
+const completeListEl = document.getElementById("done-list"); //массив задач "выполнено" в разметке (ul)
+const onHoldListEl = document.getElementById("on-hold-list");//массив задач "на паузе" в разметке (ul)
 
-// Item Lists
-const listColumns = document.querySelectorAll(".drag-item-list");
-const backlogListEl = document.getElementById("to-do-list");
-const progressListEl = document.getElementById("doing-list");
-const completeListEl = document.getElementById("done-list");
-const onHoldListEl = document.getElementById("on-hold-list");
-
-// Items
-let updatedOnLoad = false;
+//массив всех задач из бд
+var RowTasksList = [backlogTasks, 
+					progressTasks,
+					completeTasks,
+					onHoldTasks];
 
 // Initialize Arrays
-let backlogListArray = [];
-let progressListArray = [];
-let completeListArray = [];
-let onHoldListArray = [];
-let listArrays = [];
+let backlogListArray = []; //массив "to-do" задач
+let progressListArray = []; // массив задач "в работе"
+let completeListArray = []; // массив задач "выполнено"
+let onHoldListArray = []; // массив задач "на паузе"
 
-// Drag Functionality
-let draggedItem;
-let dragging = false;
-let currentColumn;
+// массив всех задач
+listArrays = [
+	backlogListArray,
+	progressListArray,
+	completeListArray,
+	onHoldListArray,
+];
+//массив статусов 
+const statuses = ['backlog', 'progress', 'complete', 'on_hold'];
 
-// Get Arrays from localStorage if available, set default values if not
-function getSavedColumns() {
-	if (localStorage.getItem("backlogItems")) {
-		backlogListArray = JSON.parse(localStorage.backlogItems);
-		progressListArray = JSON.parse(localStorage.progressItems);
-		completeListArray = JSON.parse(localStorage.completeItems);
-		onHoldListArray = JSON.parse(localStorage.onHoldItems);
-	} else {
-		const intro = prompt(
-			"Type 'y' (Yes) if you want to display an Editable Sample? \n(Not typing 'y' will display a plane NEW board.)"
-		);
-		if (intro === "y" || intro === "Y") {
-			backlogListArray = [
-				"Write the documentation",
-				"Post a technical article",
-			];
-			progressListArray = ["Work on Droppi project", "Listen to Spotify"];
-			completeListArray = ["Submit a PR", "Review my projects code"];
-			onHoldListArray = ["Get a girlfriend"];
-		} else {
-			backlogListArray = [];
-			progressListArray = [];
-			completeListArray = [];
-			onHoldListArray = [];
-		}
-	}
-}
+var current_modal_task_status = "";
+var current_task_list_id;
+var current_task_id;
 
-// Set localStorage Arrays
+
+//TODO: сделать перенос задачи в другие столбцы при изменении статуса
 function updateSavedColumns() {
-	listArrays = [
-		backlogListArray,
-		progressListArray,
-		completeListArray,
-		onHoldListArray,
-	];
 	const arrayNames = ["backlog", "progress", "complete", "onHold"];
 	arrayNames.forEach((arrayName, index) => {
 		localStorage.setItem(
@@ -70,178 +41,222 @@ function updateSavedColumns() {
 	});
 }
 
-// Filter Array to remove empty values
+// убирает из массива задач пустые элементы
 function filterArray(array) {
 	const filteredArray = array.filter((item) => item !== null);
 	return filteredArray;
 }
 
-// Create DOM Elements for each list item
-function createItemEl(columnEl, column, item, index) {
+//открытие модального окна и заполнение данными 
+document.addEventListener('DOMContentLoaded', function () {
+	// Добавляем обработчик на весь документ
+	document.body.addEventListener('click', function (event) {
+		if (event.target.classList.contains('taskbutton')) {
+			current_task_list_id = event.target.getAttribute('task-list-id');
+			current_task_id = event.target.getAttribute('task-id');
 
-	const listEl = document.createElement("li");
-	listEl.textContent = item;
-	listEl.id = index;
-	listEl.classList.add("drag-item");
-	listEl.draggable = true;
-	listEl.setAttribute("onfocusout", `updateItem(${index}, ${column})`);
-	listEl.setAttribute("ondragstart", "drag(event)");
-	listEl.contentEditable = true;
-	// Append
-	columnEl.appendChild(listEl);
-}
+			let current_task = RowTasksList[current_task_list_id][current_task_id];
+			// Извлекаем данные из объекта по названию
+			document.getElementById('exampleModalLabel').textContent = current_task.name;
+			document.getElementById('taskDescription').textContent = current_task.description;
+			if (current_task.date_start != null){
+				document.getElementById('startDate').value = current_task.date_start.replace(' ', 'T').slice(0, 16);
+			}
+			else{
+				document.getElementById('startDate').value = "";
+			}
+			if(current_task.date_end != null)
+			{
+				document.getElementById('endDate').value = current_task.date_end.replace(' ', 'T').slice(0, 16);
+			}
+			else{
+				document.getElementById('endDate').value = "";
+			}
+			
+			//создание поля статуса
+			const modalWindow = document.getElementById('modalbody'); //получаем тело модального окна
+			
+			//удаление поля статуса из модального окна, если он уже был
+			var old_status = document.getElementById('statusdiv');
+			if (old_status != null) {
+				modalWindow.removeChild(old_status);
+			}
 
-// Update Columns in DOM - Reset HTML, Filter Array, Update localStorage
-function updateDOM() {
-	// Check localStorage once
-	if (!updatedOnLoad) {
-		getSavedColumns();
-	}
-	// Backlog Column
-	backlogListEl.textContent = "";
-	backlogListArray.forEach((backlogItem, index) => {
-		createItemEl(backlogListEl, 0, backlogItem, index);
-	});
-	backlogListArray = filterArray(backlogListArray);
-	// Progress Column
-	progressListEl.textContent = "";
-	progressListArray.forEach((progressItem, index) => {
-		createItemEl(progressListEl, 1, progressItem, index);
-	});
-	progressListArray = filterArray(progressListArray);
-	// Complete Column
-	completeListEl.textContent = "";
-	completeListArray.forEach((completeItem, index) => {
-		createItemEl(completeListEl, 2, completeItem, index);
-	});
-	completeListArray = filterArray(completeListArray);
-	// On Hold Column
-	onHoldListEl.textContent = "";
-	onHoldListArray.forEach((onHoldItem, index) => {
-		createItemEl(onHoldListEl, 3, onHoldItem, index);
-	});
-	onHoldListArray = filterArray(onHoldListArray);
-	// Run getSavedColumns only once, Update Local Storage
-	updatedOnLoad = true;
-	updateSavedColumns();
-}
-
-// Update Item - Delete if necessary, or update Array value
-function updateItem(id, column) {
-	const selectedArray = listArrays[column];
-	const selectedColumn = listColumns[column].children;
-	if (!dragging) {
-		if (!selectedColumn[id].textContent) {
-			delete selectedArray[id];
-		} else {
-			selectedArray[id] = selectedColumn[id].textContent;
+			current_modal_task_status = current_task.status;
+			// добавление нового statusDiv в тело модального окна
+			let h = createStatusField(current_task.status, modalWindow);
+			modalWindow.appendChild(h);
 		}
-		updateDOM();
-	}
-}
-
-// Add to Column List, Reset Textbox
-function addToColumn(column) {
-	const itemText = addItems[column].textContent;
-	const selectedArray = listArrays[column];
-	selectedArray.push(itemText);
-	addItems[column].textContent = "";
-	updateDOM(column);
-}
-
-// Show Add Item Input Box
-function showInputBox(column) {
-	addBtns[column].style.visibility = "hidden";
-	saveItemBtns[column].style.display = "flex";
-	addItemContainers[column].style.display = "flex";
-}
-
-// Hide Item Input Box
-function hideInputBox(column) {
-	addBtns[column].style.visibility = "visible";
-	saveItemBtns[column].style.display = "none";
-	addItemContainers[column].style.display = "none";
-	addToColumn(column);
-}
-
-// Allows arrays to reflect Drag and Drop items
-function rebuildArrays() {
-	backlogListArray = [];
-	for (let i = 0; i < backlogListEl.children.length; i++) {
-		backlogListArray.push(backlogListEl.children[i].textContent);
-	}
-	progressListArray = [];
-	for (let i = 0; i < progressListEl.children.length; i++) {
-		progressListArray.push(progressListEl.children[i].textContent);
-	}
-	completeListArray = [];
-	for (let i = 0; i < completeListEl.children.length; i++) {
-		completeListArray.push(completeListEl.children[i].textContent);
-	}
-	onHoldListArray = [];
-	for (let i = 0; i < onHoldListEl.children.length; i++) {
-		onHoldListArray.push(onHoldListEl.children[i].textContent);
-	}
-	updateDOM();
-}
-
-// When Item Enters Column Area
-function dragEnter(column) {
-	listColumns[column].classList.add("over");
-	currentColumn = column;
-}
-
-// When Item Starts Dragging
-function drag(e) {
-	draggedItem = e.target;
-	dragging = true;
-}
-
-// Column Allows for Item to Drop
-function allowDrop(e) {
-	e.preventDefault();
-}
-
-// Dropping Item in Column
-function drop(e) {
-	e.preventDefault();
-	const parent = listColumns[currentColumn];
-	// Remove Background Color/Padding
-	listColumns.forEach((column) => {
-		column.classList.remove("over");
 	});
-	// Add item to Column
-	parent.appendChild(draggedItem);
-	// Dragging complete
-	dragging = false;
-	rebuildArrays();
-}
-
-function updateDOM() {
-    // Используем встроенные переменные для инициализации колонок
-    backlogListArray = backlogTasks || [];
-    progressListArray = progressTasks || [];
-    completeListArray = completeTasks || [];
-    onHoldListArray = onHoldTasks || [];
-
-    // Обновляем DOM для каждой колонки
-    createListElements(backlogListEl, backlogListArray);
-    createListElements(progressListEl, progressListArray);
-    createListElements(completeListEl, completeListArray);
-    createListElements(onHoldListEl, onHoldListArray);
-}
-
-function createListElements(columnEl, tasksArray) {
-    columnEl.textContent = ""; // Очистка текущего содержимого колонки
-    tasksArray.forEach((task, index) => {
-        createItemEl(columnEl, index, task, index); // Пересоздание элементов
-    });
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    updateDOM(); // Инициализация DOM при загрузке страницы
 });
 
+function createStatusField(status, modalBodyDiv){
+
+	const statusDiv = document.createElement('div'); //создаём контейнер для хранения статуса
+	statusDiv.className = 'statusboxflex'; //задаём стиль этому контейнеру
+	statusDiv.id = 'statusdiv'; // задаём ему id 
+	
+	const statusContentDiv = document.createElement('div');
+	statusContentDiv.className = 'status-content';
+
+	const dotDiv = document.createElement('div'); // создаём внутри него контейнер для точечки 
+	dotDiv.className = `status-dot ${status}`; // задаём точечке стиль точечки
+	dotDiv.id = 'status-dot';
+
+	const textSpan = document.createElement('span'); // создаём текст возле точечки
+	textSpan.id = 'status-field-text';
+	textSpan.textContent = statusDecode(status); // задаём значение тексту возле точечки
+	
+	statusContentDiv.appendChild(dotDiv);
+	statusContentDiv.appendChild(textSpan);
+
+	// Создаем и настраиваем dropdownDiv
+	const dropdownDiv = document.createElement('div');
+	dropdownDiv.className = 'dropdown';
+
+	// Кнопка для dropdown
+	const button = document.createElement('button');
+	button.className = 'btn btn-secondary dropdown-toggle';
+	button.type = 'button';
+	button.id = 'dropdownMenuButton2';
+	button.dataset.bsToggle = 'dropdown';
+	button.setAttribute('aria-expanded', 'false');
+	button.textContent = 'Изменить статус';
+	dropdownDiv.appendChild(button);
+
+	// Список для dropdown
+	const ul = document.createElement('ul');
+	ul.className = 'dropdown-menu dropdown-menu-dark';
+	ul.setAttribute('aria-labelledby', 'dropdownMenuButton2');
+	
+	// Варианты статусов для dropdown
+
+	statuses.forEach(status_from_massiv => {
+		if (status != status_from_massiv){
+			const li = document.createElement('li');
+			const optionDiv = document.createElement('div');
+			optionDiv.className = 'dropdown-item';
+
+			const dotDiv = document.createElement('div');
+			dotDiv.className = `status-dot ${status_from_massiv}`;
+			optionDiv.appendChild(dotDiv);
+
+			const liStatusText = document.createElement('span');
+			liStatusText.id = "status-change-element";
+			liStatusText.textContent = statusDecode(status_from_massiv);
+			optionDiv.appendChild(liStatusText);
+
+			dotDiv.style.display = 'inline-block'; // Принудительное применение стиля
+			liStatusText.style.display = 'inline-block';
+			
+			li.appendChild(optionDiv);
+			ul.appendChild(li);
+		}
+	});
+
+	ul.addEventListener('click', function(event) {
+		// Находим ближайший элемент li вверх по дереву DOM от элемента, по которому кликнули
+		let targetLi = event.target.closest('li');
+		// Если клик был не по li и не по дочерним элементам, выходим
+		if (!targetLi) return; 
+		// Если li не принадлежит текущему ul, выходим
+		if (!this.contains(targetLi)) return; 
+		// Находим текст в поле статуса
+		const prev_text_status_field = document.getElementById('status-field-text');
+		const old_status_text = prev_text_status_field.textContent;
+		// Находим точку возле текста в поле статуса
+		const prev_dot_status_div = document.getElementById('status-dot');
+		// Получаем новый текст статуса на русском языке
+		const new_task_status = targetLi.querySelector('span').textContent; 
+		// Меняем текст 
+		prev_text_status_field.textContent = new_task_status;
+		// Обнуляем классы у точки
+		prev_dot_status_div.classList.value = '';
+		// Удаляем все старые классы у точки
+		prev_dot_status_div.classList.remove(statusEncode(old_status_text))
+		// По очереди добавляем новые
+		prev_dot_status_div.classList.add('status-dot');
+		prev_dot_status_div.classList.add(statusEncode(new_task_status)); 
+
+		let need_to_send_into_db = RowTasksList[current_task_list_id][current_task_id];
+		console.log("до изменения статуса:", need_to_send_into_db.status);
+		console.log("нужно поменять на:", statusEncode(new_task_status));
+		need_to_send_into_db.status = statusEncode(new_task_status);
+		console.log("после изменения статуса:", need_to_send_into_db);
+		
+	});
+	dropdownDiv.appendChild(ul);
+	
+	// Добавляем точку и текст в statusDiv
+	statusDiv.appendChild(statusContentDiv);
+	
+	// Вставляем dropdownDiv в statusDiv
+	statusDiv.appendChild(dropdownDiv);
+	return statusDiv;
+}
+
+function statusDecode(Row_status){
+	const translations = {
+		backlog: 'Сделать',
+		progress: 'В процессе',
+		complete: 'Выполнено',
+		on_hold: 'На паузе'
+	};
+	
+	if (!translations[Row_status]) {
+		throw new Error('Неподдерживаемый статус');
+	}
+	return translations[Row_status];
+}
+
+function statusEncode(Rus_status) {
+	const reverseTranslations = {
+	  'Сделать': 'backlog',
+	  'В процессе': 'progress',
+	  'Выполнено': 'complete',
+	  'На паузе': 'on_hold'
+	};
+  
+	if (!reverseTranslations[Rus_status]) {
+	  throw new Error('Неподдерживаемый статус');
+	}
+	return reverseTranslations[Rus_status];
+}
+  
+function updateDOM() {
+	//массив массивов всех задач в разметке 
+	// каждый элемент - колонка с задачами
+	var task_column_list = [backlogListEl,progressListEl, completeListEl, onHoldListEl];
+	//проход по всем колонкам для добавления в них кнопок задач
+	task_column_list.forEach(function(task_column, row_task_list_index){
+		//проходит по всем задачам со статусом соответствующим колонке в разметке 
+		RowTasksList[row_task_list_index].forEach((task, task_index)=>{
+			//нужно создать кнопку и закинуть её в список кнопок соответствующей колонки
+			//кнопка содержит:
+				//имя задачи в тексте кнопки
+				//id или имя списка кнопок, куда ей нужно попасть
+				//было бы хорошо задать её id из списка RowTasksList, так как нужно в модалке будет 
+				//обращраться к ней 
+			const new_task_column_el = document.createElement("li"); // Создаётся новый элемент li
+			new_task_column_el.classList.add("task-li");
+			const new_task_button = document.createElement("button"); // новая кнопка
+			//основные свойства кнопки
+			new_task_button.type = "button";
+			new_task_button.textContent = task.name; // текст кнопки - имя задачи
+			// нужно для вызова модальных окон
+			new_task_button.className = "taskbutton"//используется в проверке при вызове модалки 
+			new_task_button.setAttribute("data-bs-toggle", "modal");
+			new_task_button.setAttribute("data-bs-target", "#taskModal"); 
+			// id самой задачи для того, чтобы доставать его в модалке
+			new_task_button.setAttribute("task-list-id", String(row_task_list_index));
+			new_task_button.setAttribute("task-id", String(task_index));
+			//добавление кнопки в виде li в ul
+			new_task_column_el.appendChild(new_task_button); // в li добавляется кнопка
+			task_column.appendChild(new_task_column_el); // li добавляется в ul
+			//listEl.id = index;
+		})
+	});
+}
 
 // On Load
 updateDOM();

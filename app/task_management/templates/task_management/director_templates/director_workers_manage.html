@@ -1,0 +1,125 @@
+{% extends "task_management/director_templates/director_base.html" %}
+{% load static %}
+
+{% block content %}  
+<table>
+    <thead>
+        <tr>
+            <th>Имя</th>
+            <th>Фамилия</th>
+            <th>Изменить</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for worker in workers %}
+        <tr>
+            <td>{{ worker.first_name }}</td>
+            <td>{{ worker.last_name }}</td>
+            <td>
+                <button class="chng-worker-btn" data-id="{{ worker.id }}">Изменить</button>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% comment %} модальное окно добавления работника {% endcomment %}
+<div class="modal fade" id="addWorkerModal" tabindex="-1" role="dialog" aria-labelledby="addWorkerModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addWorkerModalLabel">Добавить нового работника</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="{% url "task_management:registration" %}" method="post">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="id_first_name" class="form-label">Имя</label>
+                            <input type="text" class="form-control" id="id_first_name"
+                                value="{% if form.first_name.value %}{{ form.first_name.value }}{% endif %}"
+                                name="first_name"
+                                placeholder="Введите ваше имя" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="id_last_name" class="form-label">Фамилия</label>
+                            <input type="text" class="form-control" id="id_last_name"
+                                value="{% if form.last_name.value %}{{ form.last_name.value }}{% endif %}"
+                                name="last_name"
+                                placeholder="Введите вашу фамилию" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="id_username" class="form-label">Имя пользователя*</label>
+                            <input type="text" class="form-control" id="id_username"
+                                value="{% if form.username.value %}{{ form.username.value }}{% endif %}"
+                                name="username"
+                                placeholder="Введите ваше имя пользователя" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="id_email" class="form-label">Email*</label>
+                            <input type="email" class="form-control" id="id_email"
+                                value="{% if form.email.value %}{{ form.email.value }}{% endif %}"
+                                name="email"
+                                placeholder="Введите ваш email" required>
+                                {% if form.email.errors %}
+                                <div class="alert alert-danger alert-dismissible fade show">{{form.email.errors}}</div>
+                                {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="id_password1" class="form-label">Пароль*</label>
+                            <input type="password" class="form-control" id="id_password1"
+                                value="{% if form.password1.value %}{{ form.password1.value }}{% endif %}"
+                                name="password1"
+                                placeholder="Введите пароль" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="id_password2" class="form-label">Подтверждение пароля*</label>
+                            <input type="password" class="form-control" id="id_password2"
+                                value="{% if form.password2.value %}{{ form.password2.value }}{% endif %}"
+                                name="password2"
+                                placeholder="Подтвердите пароль" required>
+                        </div>
+                    </div>
+                    <button type="submit"
+                        class="btn btn-dark btn-block">Зарегистрироваться</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% comment %} модальное окно изменения данных работника {% endcomment %}
+<div id="editModal" style="display:none;">
+    <form>
+        
+    </form>
+</div>
+<div class="modal fade" id="changeWorkerModal" tabindex="-1" role="dialog" aria-labelledby="addWorkerModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addWorkerModalLabel">Добавить нового работника</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="{% url "task_management:registration" %}" method="post">
+                    {% csrf_token %}
+                    <div class="row">
+                        <label for="name">Имя:</label>
+                        <input type="text" id="name" name="name">
+                        <label for="surname">Фамилия:</label>
+                        <input type="text" id="surname" name="surname">
+                        <button type="submit">Сохранить изменения</button>
+                    </div>
+                    <button type="submit"
+                        class="btn btn-dark btn-block">Зарегистрироваться</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

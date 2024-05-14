@@ -1,9 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Neucha&display=swap");
 
-html {
-	box-sizing: border-box;
-}
-
 :root {
 	--to-do: #a2622d;
 	--doing: #1b6161;
@@ -11,41 +7,43 @@ html {
 	--on-hold: #a22d22;
 }
 
-body {
-	margin: 0;
-	color: white;
-	font-family: "Neucha", cursive;
-	font-size: 20px;
-	overflow-y: hidden;
-}
-
+/* Заголовок колонки */
 h1 {
 	letter-spacing: 2px;
 	text-shadow: 2px 2px 5px black;
 }
 
-.main-title {
-	text-align: center;
-	font-size: 3rem;
+.header {
+	display: flex;
+	justify-content: center;
+	border-radius: 10px;
+	margin: 15px;
+	padding: 8%;
 }
 
+.header h1 {
+	font-size: 28px;
+	padding: 10px;
+}
+
+/* Для списка с колонками и для списка с задачами */
 ul {
 	list-style-type: none;
-	margin: 0;
-	padding: 0;
 }
 
-.drag-container {
-	margin: 20px;
-}
-
-.drag-list {
+/* Контейнер с колонками задач */
+.task-column-list {
 	display: flex;
 	align-items: flex-start;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	width: 100%;
+	box-sizing: border-box;
 }
 
-/* Columns */
-.drag-column {
+/* Колонки с задачами */
+.task-column {
 	flex: 1;
 	margin: 0 10px;
 	position: relative;
@@ -54,152 +52,38 @@ ul {
 	overflow-x: hidden;
 }
 
-.to-do-column .header,
-.to-do-column .solid,
-.to-do-column .solid:hover,
-.to-do-column .over {
+.to-do-column .header {
 	background-color: var(--to-do);
 }
 
-.doing-column .header,
-.doing-column .solid,
-.doing-column .solid:hover,
-.doing-column .over {
+.doing-column .header {
 	background-color: var(--doing);
 }
 
-.done-column .header,
-.done-column .solid,
-.done-column .solid:hover,
-.done-column .over {
+.done-column .header {
 	background-color: var(--done);
 }
 
-.on-hold-column .header,
-.on-hold-column .solid,
-.on-hold-column .solid:hover,
-.on-hold-column .over {
+.on-hold-column .header {
 	background-color: var(--on-hold);
 }
 
-/* Custom Scrollbar */
-
-/* To Be Done */
-.custom-scroll-todo {
-	overflow-y: auto;
-	max-height: 75vh;
+* {
+	box-sizing: border-box;
 }
 
-.custom-scroll-todo::-webkit-scrollbar-track {
-	box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.4);
-	border-radius: 10px;
-	background-color: rgba(255, 255, 255, 0.3);
-	margin-right: 5px;
+#to-do-list,
+#doing-list,
+#done-list,
+#on-hold-list {
+	padding: 0;
+	margin: 0;
+	list-style-type: none;
 }
 
-.custom-scroll-todo::-webkit-scrollbar {
-	width: 10px;
-}
-
-.custom-scroll-todo::-webkit-scrollbar-thumb {
-	border-radius: 10px;
-	box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-	background-color: var(--to-do);
-}
-
-/* Doing */
-.custom-scroll-doing {
-	overflow-y: auto;
-	max-height: 75vh;
-}
-
-.custom-scroll-doing::-webkit-scrollbar-track {
-	box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.4);
-	border-radius: 10px;
-	background-color: rgba(255, 255, 255, 0.3);
-	margin-right: 5px;
-}
-
-.custom-scroll-doing::-webkit-scrollbar {
-	width: 10px;
-}
-
-.custom-scroll-doing::-webkit-scrollbar-thumb {
-	border-radius: 10px;
-	box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-	background-color: var(--doing);
-}
-
-/* Done */
-.custom-scroll-done {
-	overflow-y: auto;
-	max-height: 75vh;
-}
-
-.custom-scroll-done::-webkit-scrollbar-track {
-	box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.4);
-	border-radius: 10px;
-	background-color: rgba(255, 255, 255, 0.3);
-	margin-right: 5px;
-}
-
-.custom-scroll-done::-webkit-scrollbar {
-	width: 10px;
-}
-
-.custom-scroll-done::-webkit-scrollbar-thumb {
-	border-radius: 10px;
-	box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-	background-color: var(--done);
-}
-
-/* On Hold */
-.custom-scroll {
-	overflow-y: auto;
-	max-height: 75vh;
-}
-
-.custom-scroll::-webkit-scrollbar-track {
-	box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.4);
-	border-radius: 10px;
-	background-color: rgba(255, 255, 255, 0.3);
-	margin-right: 5px;
-}
-
-.custom-scroll::-webkit-scrollbar {
-	width: 10px;
-}
-
-.custom-scroll::-webkit-scrollbar-thumb {
-	border-radius: 10px;
-	box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-	background-color: var(--on-hold);
-}
-
-.header {
-	display: flex;
-	justify-content: center;
-	border-radius: 10px;
-	margin: 10px;
-    padding:8%; 
-}
-
-.header h1 {
-	font-size: 28px;
-    padding: 10px; 
-}
-
-/* Drag and Drop */
-.over {
-	padding: 50px 10px;
-}
-
-.drag-item-list {
-	min-height: 50px;
-}
-
-.drag-item {
-	margin: 10px;
+/* Задача в списке, внутри этого кнопка */
+.task-li {
+	margin: 15px;
 	padding: 10px;
 	height: fit-content;
 	background-color: rgba(0, 0, 0, 0.8);
@@ -209,103 +93,92 @@ ul {
 	cursor: pointer;
 }
 
-.drag-item:focus {
-	outline: none;
-	background-color: white;
-	color: black;
-}
-
-/* Add Button Group */
-.add-btn-group {
-	display: flex;
-	justify-content: space-between;
-}
-
-.add-btn {
-	margin: 10px;
+.task-li button {
+	width: calc(100% - 20px);
+	margin: 5px;
 	padding: 5px 10px;
-	display: flex;
-	align-items: center;
-	cursor: pointer;
-	width: fit-content;
+	border: none;
 	border-radius: 5px;
-	transition: all 0.3s ease-in;
-	user-select: none;
+	background-color: #f0f0f0;
+	color: #333;
+	cursor: pointer;
+	box-sizing: border-box;
 }
 
-.add-btn:hover {
-	background-color: rgba(255, 255, 255, 0.9);
-	color: black;
+/* Точка в модалке */
+.statusboxflex {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between; /* Изменено для распределения контента по краям */
+    align-items: center;
+    gap: 10px; 
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--bs-body-color);
+    background-color: var(--bs-body-bg);
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
-.add-btn:active {
-	transform: scale(0.97);
+.status-content {
+    display: flex;
+    flex-grow: 1; /* Занимает все доступное пространство */
+    align-items: center;
+    gap: 10px; /* Минимальный отступ между dotDiv и textSpan */
 }
 
-.solid {
-	display: none;
-}
-
-.solid:hover {
-	transition: unset;
-	filter: brightness(95%);
-	color: white;
-}
-
-.plus-sign {
-	font-size: 1.5rem;
-	margin-right: 5px;
-	position: relative;
-	top: -3px;
-}
-
-.add-container {
-	margin: 10px;
-	padding: 5px 10px;
+.status {
+	background-color: #f8f9fa;
+	padding: 20px;
 	border-radius: 10px;
-	background-color: rgba(255, 255, 255, 0.9);
-	min-height: 100px;
-	display: none;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.add-item {
-	width: 100%;
-	min-height: 100px;
-	height: auto;
-	background-color: white;
-	border-radius: 10px;
-	margin: 5px auto;
-	resize: none;
-	color: black;
-	padding: 10px;
+.status-dot {
+	height: 10px;
+	width: 10px;
+	border-radius: 50%;
+	margin-right: 10px;
 }
 
-.add-item:focus {
-	outline: none;
+.backlog {
+	background-color: #a2622d;
 }
 
-/* Media Query: Laptop */
-@media screen and (max-width: 1800px) {
-	.main-title {
-		font-size: 2rem;
-	}
+.progress {
+	background-color: #1b6161;
 }
 
-/* Media Query: Large Smartphone (Vertical) */
-@media screen and (max-width: 600px) {
-	body {
-		overflow-y: auto;
-	}
+.complete {
+	background-color: #248224;
+}
 
-	.drag-container {
-		margin: 0;
-	}
+.on_hold {
+	background-color: #a22d22;
+}
+.status-dot.progress {
+    height: 10px !important;  /* Явное указание высоты, важно для сохранения формы круга */
+    width: 10px !important;   /* Явное указание ширины, важно для сохранения формы круга */
+    border-radius: 50% !important;  /* Явное указание скругления, чтобы точка всегда была круглой */
+    background-color: #1b6161 !important;  /* Явное указание цвета фона для класса 'progress' */
+}
 
-	.drag-list {
-		display: block;
-	}
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Отступ между элементами внутри */
+    padding: 0.5rem 1rem; /* Внутренний отступ для всего элемента */
+    justify-content: flex-start; /* Элементы выравниваются по началу контейнера */
+}
 
-	.drag-column {
-		margin: 10px;
-	}
+.status-dot {
+    display: inline-block; /* или flex, если нужно */
+    /* Прочие стили для status-dot */
+}
+
+.dropdown-item span {
+    display: inline-block; /* Убедитесь, что span не занимает полную ширину */
 }

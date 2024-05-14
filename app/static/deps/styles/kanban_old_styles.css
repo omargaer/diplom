@@ -1,0 +1,15 @@
+.statusboxflex {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between; /* Элементы располагаются на разных концах */
+    align-items: center;
+    gap: 10px; 
+    padding: 0.375rem 0.75rem;
+}
+
+.status-content {
+    display: flex;
+    flex-grow: 1; /* Занимает все доступное пространство */
+    align-items: center;
+    gap: 10px; /* Минимальный отступ между dotDiv и textSpan */
+}
